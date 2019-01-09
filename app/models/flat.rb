@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_record'
-
-class ApplicationRecord < ActiveRecord::Base
-  self.abstract_class = true
-end
+require_relative 'application_record'
 
 class Flat < ApplicationRecord
   validates :avito_id, presence: true
@@ -23,11 +19,13 @@ class Flat < ApplicationRecord
         csv << fields.map { |field| flat[:properties][field] }
       end
     end
- end
-
-  private
+  end
 
   def self.fields
-    Flat.pluck(:properties).map(&:keys).flatten.uniq.sort
+    fields = Flat.pluck(:properties).map(&:keys).flatten.uniq.sort
+
+    ordered_fields = FlatField.order(position: :asc).pluck(:name)
+
+    ordered_fields + (fields - ordered_fields)
   end
 end

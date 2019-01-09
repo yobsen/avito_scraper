@@ -5,9 +5,9 @@ require 'pry'
 require 'csv'
 # require 'mini_magick'
 require 'rtesseract'
-require 'active_record'
 require 'headless'
 
+require_relative 'app/models/flat_field'
 require_relative 'app/models/flat'
 require_relative 'lib/translit'
 
@@ -42,10 +42,11 @@ class AvitoScraper
     @flats = browser.divs(class: 'item_table').map do |flat|
       avito_id = flat.attribute('data-item-id')
       db_flat = Flat.find_by(avito_id: avito_id)
-      return if db_flat # && db_flat.updated_at > Time.now - 18_000
+      return if db_flat
 
       { avito_id: avito_id,
         properties: {
+          'Фото' => flat.a(class: 'item-missing-photo').exists?,
           'Цена' => flat.span(class: 'price').attribute('content'),
           'Название' => flat.span(itemprop: 'name').text,
           'Ссылка' => flat.link(class: 'item-description-title-link').attribute('href'),
@@ -61,14 +62,15 @@ class AvitoScraper
       puts " page: #{page}, flat: #{index + 1}/#{@flats.count}, avito_id: #{flat[:avito_id]}"
 
       open_with_retries(flat[:properties]['Ссылка'])
-      # sleep 1
-
-      browser.elements(class: 'item-params-list-item item-description-text').each do |param|
+      browser.lis(class: 'item-params-list-item').each do |param|
         key, value = param.text.split(': ')
-        flat[:properties][key] = value.delete('м²')
+        flat[:properties][key] = value.gsub(' м²', '').gsub(/(\d)\.(\d)/, '\1,\2')
       end
 
       flat[:properties]['Контактное лицо'] = browser.div(class: 'seller-info-value').text
+      flat[:properties]['Текст объявления'] = browser.div(class: 'item-description-text').text
+      flat[:properties]['Цена 1 кв.м.'] = (flat[:properties]['Цена'].to_f /
+                                                  flat[:properties]['Общая площадь'].to_f).round(1)
 
       browser.link(class: 'item-phone-button_card').click
       phone_base64 = browser.div(class: 'item-phone-big-number').img.attribute('src')
@@ -82,7 +84,7 @@ class AvitoScraper
   end
 
   def pull_pages
-    (1..100).each do |page|
+    (1..1).each do |page|
       url = "#{@root}?p=#{page}"
       puts " page: #{page}\n"
 
@@ -95,6 +97,7 @@ class AvitoScraper
 
   def open_with_retries(url)
     browser.goto(url)
+    sleep 0.5
   rescue StandardError => ex
     raise if @tries.zero?
 
@@ -108,6 +111,4 @@ class AvitoScraper
 end
 
 scraper = AvitoScraper.new('http://www.avito.ru/stavropol/kvartiry/prodam')
-# scraper.pull_pages
-# Flat.to_csv
 binding.pry

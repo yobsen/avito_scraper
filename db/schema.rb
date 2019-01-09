@@ -10,7 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_04_210114) do
+ActiveRecord::Schema.define(version: 2019_01_09_171030) do
+
+  create_table "flat_fields", force: :cascade do |t|
+    t.string "name"
+    t.integer "position"
+  end
 
   create_table "flats", force: :cascade do |t|
     t.integer "avito_id"
