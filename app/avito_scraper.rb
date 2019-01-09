@@ -69,8 +69,8 @@ class AvitoScraper
 
       flat[:properties]['Контактное лицо'] = browser.div(class: 'seller-info-value').text
       flat[:properties]['Текст объявления'] = browser.div(class: 'item-description-text').text
-      flat[:properties]['Цена 1 кв.м.'] = (flat[:properties]['Цена'].to_f /
-                                                  flat[:properties]['Общая площадь'].to_f).round(1)
+      flat[:properties]['Цена 1 кв.м.'] =
+        (flat[:properties]['Цена'].to_f / flat[:properties]['Общая площадь'].to_f).to_s.tr('.', ',')
 
       browser.link(class: 'item-phone-button_card').click
       phone_base64 = browser.div(class: 'item-phone-big-number').img.attribute('src')
@@ -84,7 +84,7 @@ class AvitoScraper
   end
 
   def pull_pages
-    (1..1).each do |page|
+    (1..100).each do |page|
       url = "#{@root}?p=#{page}"
       puts " page: #{page}\n"
 
