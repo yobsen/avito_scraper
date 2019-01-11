@@ -8,7 +8,7 @@ class Flat < ApplicationRecord
   def self.upsert(avito_id, properties)
     db_flat = Flat.where(avito_id: avito_id).first_or_initialize
     db_flat.properties = properties
-    db_flat.save
+    db_flat.save!
   end
 
   def self.to_csv
@@ -27,5 +27,17 @@ class Flat < ApplicationRecord
     ordered_fields = FlatField.order(position: :asc).pluck(:name)
 
     ordered_fields + (fields - ordered_fields)
+  end
+
+  def self.fix_photo_field
+    Flat.all.each do |flat|
+      flat.properties['Фото'] =
+        if flat.properties['Фото'] == 'ecть'
+          'нет'
+        else
+          'есть'
+        end
+      flat.save
+    end
   end
 end
