@@ -6,7 +6,9 @@ require 'csv'
 require 'rtesseract'
 require 'headless'
 require 'config'
-Config.load_and_set_settings(Config.setting_files("config", "development"))
+
+env = ENV['environment'].presence || 'development'
+Config.load_and_set_settings(Config.setting_files("config", env))
 
 require_relative 'app/models/flat_field'
 require_relative 'app/models/flat'
@@ -158,4 +160,7 @@ class AvitoScraper
   end
 end
 
-binding.pry if ENV['DEBUG'] == '1'
+binding.pry unless ARGV[1]
+
+AvitoScraper.sync if ARGV[1] == 'sync'
+AvitoScraper.send_report if ARGV[1] == 'send_report'

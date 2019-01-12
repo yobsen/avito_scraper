@@ -13,12 +13,12 @@
 #   rake "some:great:rake:task"
 # end
 #
-every 1.day, at: '19:12' do
-  runner 'AvitoScraper.send_report'
+every 1.day, at: '20:15' do
+  command 'bundle exec pry app/avito_scraper.rb send_report'
 end
 
 every 12.hours, at: '00:00' do
-  runner 'AvitoScraper.sync'
+  command 'bundle exec pry app/avito_scraper.rb sync'
 end
 
 # Learn more: http://github.com/javan/whenever
