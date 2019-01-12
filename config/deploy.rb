@@ -1,4 +1,6 @@
 # config valid for current version and patch releases of Capistrano
+set :rbenv_type, :user
+
 set :application, 'avito_scraper'
 set :deploy_to,   "/code/#{fetch :application}"
 set :repo_url, 'git@github.com:porosb/avito_scraper.git'

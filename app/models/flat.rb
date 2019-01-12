@@ -28,16 +28,4 @@ class Flat < ApplicationRecord
 
     ordered_fields + (fields - ordered_fields)
   end
-
-  def self.fix_photo_field
-    Flat.where('created_at < ?', Time.now - 72_000).each do |flat|
-      flat.properties['Фото'] =
-        if flat.properties['Фото'] == 'ecть'
-          'нет'
-        else
-          'есть'
-        end
-      flat.save
-    end
-  end
 end

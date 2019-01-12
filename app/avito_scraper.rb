@@ -23,6 +23,15 @@ ActiveRecord::Base.establish_connection(db_configuration['development'])
 Watir.default_timeout = 600
 
 class AvitoScraper
+  def self.sync
+    scraper = AvitoScraper.new('http://www.avito.ru/stavropol/kvartiry/prodam')
+    scraper.pull_pages
+  end
+  def self.send_report
+    Flat.to_csv
+    Emailer.call
+  end
+
   def initialize(root)
     @root = root
     @flats = []
@@ -149,5 +158,4 @@ class AvitoScraper
   end
 end
 
-scraper = AvitoScraper.new('http://www.avito.ru/stavropol/kvartiry/prodam')
-binding.pry
+binding.pry if ENV['DEBUG'] == '1'
