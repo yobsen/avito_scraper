@@ -30,7 +30,7 @@ class Flat < ApplicationRecord
   end
 
   def self.fix_photo_field
-    Flat.all.each do |flat|
+    Flat.where('created_at < ?', Time.now - 72_000).each do |flat|
       flat.properties['Фото'] =
         if flat.properties['Фото'] == 'ecть'
           'нет'
