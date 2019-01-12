@@ -13,7 +13,7 @@
 #   rake "some:great:rake:task"
 # end
 #
-every 1.day, at: '18:30' do
+every 1.day, at: '19:12' do
   runner 'AvitoScraper.send_report'
 end
 
