@@ -3,6 +3,11 @@
 source 'https://rubygems.org'
 
 gem 'activerecord'
+
+gem 'capistrano'
+gem 'capistrano-bundler'
+gem 'capistrano-rbenv'
+
 gem 'config'
 gem 'csv'
 gem 'headless'

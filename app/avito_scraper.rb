@@ -3,7 +3,6 @@
 require 'watir'
 require 'pry'
 require 'csv'
-# require 'mini_magick'
 require 'rtesseract'
 require 'headless'
 require 'config'
@@ -15,7 +14,7 @@ require_relative 'lib/translit'
 require_relative 'app/emailer'
 
 def db_configuration
-  db_configuration_file = File.join(File.expand_path(__dir__), 'db', 'config.yml')
+  db_configuration_file = File.join(File.expand_path(__dir__), 'config', 'database.yml')
   YAML.safe_load(File.read(db_configuration_file))
 end
 

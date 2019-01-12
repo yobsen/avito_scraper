@@ -10,16 +10,17 @@ Mail.defaults do
 end
 
 class Emailer
-  def self.find_last_file
+  def self.find_last_report
     Dir.glob('reports/*').max_by { |f| File.mtime(f) }
   end
 
   def self.call
+    report = find_last_report
     Mail.deliver do
       from     Settings.emailer.from
       to       Settings.emailer.to
       subject  'avito_scraper'
-      add_file find_last_file
+      add_file report
     end
   end
 end
