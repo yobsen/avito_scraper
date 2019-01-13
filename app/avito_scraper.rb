@@ -7,8 +7,7 @@ require 'rtesseract'
 require 'headless'
 require 'config'
 
-env = ENV['environment'].presence || 'development'
-Config.load_and_set_settings(Config.setting_files("config", env))
+Config.load_and_set_settings(Config.setting_files("config", 'development'))
 
 require_relative 'app/models/flat_field'
 require_relative 'app/models/flat'
@@ -30,7 +29,6 @@ class AvitoScraper
     scraper.pull_pages
   end
   def self.send_report
-    Flat.to_csv
     Emailer.call
   end
 
@@ -42,7 +40,7 @@ class AvitoScraper
   end
 
   def browser
-    @browser ||= Watir::Browser.new :firefox, headless: true
+    @browser ||= Watir::Browser.new :chrome, headless: true
   end
 
   def fetch_flats_from_page(url)
@@ -77,9 +75,7 @@ class AvitoScraper
       benchmark_flat = Time.now
       print " page: #{@page}, flat: #{index + 1}/#{@flats.count}, avito_id: #{flat[:avito_id]}"
 
-      fetch_flat_info(flat, index)  
-
-      flat_payload = fetch_flat_info(flat, index)
+      flat_payload = fetch_flat_info(flat)
       Flat.upsert(flat_payload[:avito_id], flat_payload[:properties])
 
       print ", saved: #{(Time.now - benchmark_flat).to_i}s.\n"
@@ -118,10 +114,20 @@ class AvitoScraper
     RTesseract.new('tmp/phone.png').to_s.strip
   end
 
-  def pull_pages
+  def prepare
     FileUtils.mkdir_p('tmp')
     FileUtils.mkdir_p('reports')
+    
+    # daemonize
+    Process.daemon(true,true)
+    # write pid to a .pid file
+    pid_file = File.dirname(__FILE__) + "#{__FILE__}.pid"
+    File.open(pid_file, 'w') { |f| f.write Process.pid }
+  end
 
+  def pull_pages
+    prepare
+    
     (1..100).each do |page|
       @page = page
 
@@ -137,6 +143,7 @@ class AvitoScraper
     end
 
     Flat.where.not(avito_id: @all_ids).delete_all
+    Flat.to_csv
   end
 
   private

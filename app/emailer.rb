@@ -1,9 +1,10 @@
 require 'mail'
 Mail.defaults do
   delivery_method :smtp,
-                  address: 'smtp.gmail.com',
-                  port: 587,
-                  user_name: Settings.emailer.user_name,
+                  address: 'smtp.yandex.ru',
+                  tls: true,
+                  port: 465,
+                  user_name: Settings.emailer.from,
                   password: Settings.emailer.password,
                   authentication: 'plain',
                   enable_starttls_auto: true
@@ -16,10 +17,12 @@ class Emailer
 
   def self.call
     report = find_last_report
+
     Mail.deliver do
       from     Settings.emailer.from
       to       Settings.emailer.to
-      subject  'avito_scraper'
+      subject  'Avito Scraper'
+      body report
       add_file report
     end
   end
