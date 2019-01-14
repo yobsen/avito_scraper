@@ -13,7 +13,7 @@
 #   rake "some:great:rake:task"
 # end
 #
-every 1.day, at: ['2:00', '5:00'] do
+every 1.day, at: ['02:00', '05:00'] do
   command 'cd /code/avito_scraper/current && bundle exec pry app/avito_scraper.rb sync'
 end
 

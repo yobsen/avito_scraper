@@ -1,9 +1,8 @@
 require 'mail'
 Mail.defaults do
   delivery_method :smtp,
-                  address: 'smtp.yandex.ru',
-                  tls: true,
-                  port: 465,
+                  address: Settings.emailer.smtp_domain,
+                  port: Settings.emailer.smtp_port,
                   user_name: Settings.emailer.from,
                   password: Settings.emailer.password,
                   authentication: 'plain',
