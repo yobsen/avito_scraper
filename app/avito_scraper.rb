@@ -118,11 +118,7 @@ class AvitoScraper
     FileUtils.mkdir_p('tmp')
     FileUtils.mkdir_p('reports')
     
-    # daemonize
-    Process.daemon(true,true)
-    # write pid to a .pid file
-    pid_file = File.dirname(__FILE__) + "#{__FILE__}.pid"
-    File.open(pid_file, 'w') { |f| f.write Process.pid }
+    File.open('tmp/pid', 'w') { |f| f.write Process.pid }
   end
 
   def pull_pages
