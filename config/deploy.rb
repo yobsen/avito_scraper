@@ -6,6 +6,7 @@ set :deploy_to,   "/code/#{fetch :application}"
 set :repo_url, 'git@github.com:porosb/avito_scraper.git'
 
 set :linked_files, %w[config/settings.local.yml flats.sql]
+set :linked_dirs, %w[reports]
 
 set :ssh_options, user: 'ksevelyar', forward_agent: true
 
