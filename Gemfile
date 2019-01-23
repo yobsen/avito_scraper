@@ -10,6 +10,7 @@ gem 'capistrano-rbenv'
 
 gem 'config'
 gem 'csv'
+gem 'fast_excel'
 gem 'headless'
 gem 'mail'
 gem 'mini_magick'

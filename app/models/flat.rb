@@ -21,6 +21,27 @@ class Flat < ApplicationRecord
     end
   end
 
+  def self.to_xlsx
+    workbook = FastExcel.open(
+      "reports/#{Time.now.strftime('%-d-%B-%Y_%H:%M')}_avito_scraper.xlsx",
+      constant_memory: true
+    )
+    workbook.default_format.set(
+      font_size: 0, # user's default
+      font_family: 'Arial'
+    )
+
+    worksheet = workbook.add_worksheet('Example Report')
+    worksheet.write_row(0, fields)
+    Flat.all.each_with_index do |flat, index|
+      flat.properties['Район'], flat.properties['Улица'] =
+        flat.properties['Адрес'].gsub(/ ставрополь,/i, '').split(', ', 2)
+      worksheet.write_row(index + 1, fields.map { |field| flat.properties[field] })
+    end
+
+    workbook.close
+  end
+
   def self.fields
     fields = Flat.pluck(:properties).map(&:keys).flatten.uniq.sort
 

@@ -3,6 +3,7 @@
 require 'watir'
 require 'pry'
 require 'csv'
+require 'fast_excel'
 require 'rtesseract'
 require 'headless'
 require 'config'
@@ -139,7 +140,7 @@ class AvitoScraper
     end
 
     Flat.where.not(avito_id: @all_ids).delete_all
-    Flat.to_csv
+    Flat.to_xlsx
   end
 
   private

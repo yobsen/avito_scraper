@@ -80,6 +80,8 @@ GEM
       dry-logic (~> 0.4, >= 0.4.0)
       dry-types (~> 0.13.1)
     erubi (1.8.0)
+    fast_excel (0.2.5)
+      ffi (> 1.9, < 2)
     ffi (1.10.0)
     headless (2.3.1)
     i18n (1.5.1)
@@ -152,6 +154,7 @@ DEPENDENCIES
   capistrano-rbenv
   config
   csv
+  fast_excel
   headless
   mail
   mini_magick
