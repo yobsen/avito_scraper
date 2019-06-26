@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
+require 'webdrivers'
 require 'watir'
 require 'pry'
 require 'csv'
 require 'fast_excel'
 require 'rtesseract'
-require 'headless'
 require 'config'
 
-Config.load_and_set_settings(Config.setting_files("config", 'development'))
+Config.load_and_set_settings(Config.setting_files('config', 'development'))
 
 require_relative 'app/models/flat_field'
 require_relative 'app/models/flat'
@@ -29,6 +29,7 @@ class AvitoScraper
     scraper = AvitoScraper.new('http://www.avito.ru/stavropol/kvartiry/prodam')
     scraper.pull_pages
   end
+
   def self.send_report
     Emailer.call
   end
@@ -41,7 +42,8 @@ class AvitoScraper
   end
 
   def browser
-    @browser ||= Watir::Browser.new :chrome, headless: true
+    args = %w[headless disable-gpu disable-dev-shm-usage disable-software-rasterizer no-sandbox]
+    @browser ||= Watir::Browser.new :chrome, args: args
   end
 
   def fetch_flats_from_page(url)
@@ -99,13 +101,16 @@ class AvitoScraper
     flat[:properties]['Цена 1 кв.м.'] =
       (flat[:properties]['Цена'].to_f / flat[:properties]['Общая площадь'].to_f).round(1).to_s.tr('.', ',')
 
-    browser.link(class: 'item-phone-button_card').click
-    phone_base64 = browser.div(class: 'item-phone-big-number').img.attribute('src')
-    flat[:properties]['Телефон'] = parse_base64_to_text(phone_base64)
+    phone = browser.link(class: 'item-phone-button_card')
+    if phone.exists?
+      phone.click
+      phone_base64 = browser.div(class: 'item-phone-big-number').img.attribute('src')
+      flat[:properties]['Телефон'] = parse_base64_to_text(phone_base64)
+    end
 
     flat
-  rescue StandardError => ex
-    survive_error(ex)
+  rescue StandardError => e
+    survive_error(e)
     fetch_flat_info(flat)
   end
 
@@ -118,13 +123,13 @@ class AvitoScraper
   def prepare
     FileUtils.mkdir_p('tmp')
     FileUtils.mkdir_p('reports')
-    
+
     File.open('tmp/pid', 'w') { |f| f.write Process.pid }
   end
 
   def pull_pages
     prepare
-    
+
     (1..100).each do |page|
       @page = page
 
@@ -158,8 +163,8 @@ class AvitoScraper
 
   def open_with_retries(url)
     browser.goto(url)
-  rescue StandardError => ex
-    survive_error(ex, url)
+  rescue StandardError => e
+    survive_error(e, url)
     open_with_retries(url)
   end
 end
