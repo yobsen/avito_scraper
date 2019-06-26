@@ -7,5 +7,9 @@ I've used:
 * [Watir](https://github.com/watir/watir) for parsing JS logic
 * [ruby-tesseract-ocr](https://github.com/meh/ruby-tesseract-ocr) to decode phone numbers from base64
 
+## Setup
+* `bundle`
+* `pry app/avito_scraper.rb sync`
+
 ## XSLX
 ![xslx](https://i.imgur.com/lcB7oGA.png)
