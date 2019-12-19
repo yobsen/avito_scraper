@@ -101,10 +101,10 @@ class AvitoScraper
     flat[:properties]['Цена 1 кв.м.'] =
       (flat[:properties]['Цена'].to_f / flat[:properties]['Общая площадь'].to_f).round(1).to_s.tr('.', ',')
 
-    phone = browser.link(class: 'item-phone-button_card')
+    phone = browser.link(class: 'item-phone-button')
     if phone.exists?
       phone.click
-      phone_base64 = browser.div(class: 'item-phone-big-number').img.attribute('src')
+      phone_base64 = browser.div(class: 'item-phone-number').img.attribute('src')
       flat[:properties]['Телефон'] = parse_base64_to_text(phone_base64)
     end
 
