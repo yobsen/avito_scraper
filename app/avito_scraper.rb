@@ -22,7 +22,7 @@ end
 
 ActiveRecord::Base.establish_connection(db_configuration['development'])
 
-Watir.default_timeout = 600
+Watir.default_timeout = 20
 
 class AvitoScraper
   def self.sync
@@ -37,7 +37,7 @@ class AvitoScraper
   def initialize(root)
     @root = root
     @flats = []
-    @tries = 50
+    @tries = 1
     @all_ids = []
   end
 
@@ -68,7 +68,7 @@ class AvitoScraper
           'Цена' => flat.span(class: 'price').attribute('content'),
           'Название' => avito_name,
           'Ссылка' => flat.link(class: 'item-description-title-link').attribute('href'),
-          'Адрес' => flat.p(class: 'address').text
+          'Адрес' => flat.div(class: 'address').text
         } }
     end.compact
   end
@@ -89,7 +89,7 @@ class AvitoScraper
     open_with_retries(flat[:properties]['Ссылка'])
 
     browser.lis(class: 'item-params-list-item').each do |param|
-      key, value = param.text.split(': ')
+      key, value = param.text.split(/:\s/)
       flat[:properties][key] = value.gsub(' м²', '').gsub(/(\d)\.(\d)/, '\1,\2')
     end
 
