@@ -56,7 +56,7 @@ class AvitoScraper
     @flats = flats_nodes.map do |flat|
       avito_id = flat.attribute('data-item-id')
       @all_ids.push(avito_id)
-      avito_name = flat.span(itemprop: 'name').text
+      avito_name = flat.a(itemprop: 'url').text
 
       db_flat = Flat.find_by(avito_id: avito_id)
       puts " page: #{@page}, skip: #{avito_id}, name: #{avito_name}" if db_flat
@@ -67,7 +67,7 @@ class AvitoScraper
           'Фото' => flat.a(class: 'item-missing-photo').exists? ? 'нет' : 'есть',
           'Цена' => flat.span(class: 'price').attribute('content'),
           'Название' => avito_name,
-          'Ссылка' => flat.link(class: 'item-description-title-link').attribute('href'),
+          'Ссылка' => flat.a(itemprop: 'url').attribute('href'),
           'Адрес' => flat.div(class: 'address').text
         } }
     end.compact
@@ -110,6 +110,7 @@ class AvitoScraper
 
     flat
   rescue StandardError => e
+    binding.pry
     survive_error(e)
     fetch_flat_info(flat)
   end
