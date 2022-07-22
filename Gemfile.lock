@@ -102,7 +102,7 @@ GEM
       activerecord (>= 3)
       rake
     thread_safe (0.3.6)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     watir (6.16.5)
       regexp_parser (~> 1.2)
